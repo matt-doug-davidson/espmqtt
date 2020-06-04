@@ -7,57 +7,57 @@ import (
 )
 
 type EspMessage struct {
-	topic   string
-	payload EspPayload
+	Topic   string
+	Payload EspPayload
 }
 
-func (e *EspMessage) SetTopic(t string) {
-	e.topic = t
-}
+// func (e *EspMessage) SetTopic(t string) {
+// 	e.topic = t
+// }
 
-func (e *EspMessage) GetTopic() string {
-	return e.topic
-}
+// func (e *EspMessage) GetTopic() string {
+// 	return e.topic
+// }
 
-func (e *EspMessage) GetPayload() EspPayload {
-	return e.payload
-}
+// func (e *EspMessage) GetPayload() EspPayload {
+// 	return e.payload
+// }
 
-func (e *EspMessage) SetDatetime(t string) {
-	e.payload.datetime = t
-}
+// func (e *EspMessage) SetDatetime(t string) {
+// 	e.payload.datetime = t
+// }
 
-func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
-	v := EspValues{field: field, amount: amount, attributes: attr}
-	e.payload.values = append(e.payload.values, v)
-}
+// func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
+// 	v := EspValues{field: field, amount: amount, attributes: attr}
+// 	e.payload.values = append(e.payload.values, v)
+// }
 
 type EspPayload struct {
-	datetime  string      `json:"datetime"`
-	values    []EspValues `json:"values"`
-	messageId string      `json:"messageId"`
+	Datetime  string      `json:"datetime"`
+	Values    []EspValues `json:"values"`
+	MessageId string      `json:"messageId"`
 }
 
 // GetDatetime returns the datetime
-func (e *EspPayload) GetDatetime() string {
-	return e.datetime
-}
+// func (e *EspPayload) GetDatetime() string {
+// 	return e.datetime
+// }
 
-// GetValues returns the values slice to caller
-func (e *EspPayload) GetValues() []EspValues {
-	return e.values
-}
+// // GetValues returns the values slice to caller
+// func (e *EspPayload) GetValues() []EspValues {
+// 	return e.values
+// }
 
 type EspValues struct {
-	field      string  `json:"field"`
-	amount     float64 `json:"amount"`
-	attributes string  `json:"attributes"`
+	Field      string  `json:"field"`
+	Amount     float64 `json:"amount"`
+	Attributes string  `json:"attributes"`
 }
 
-// GetValues returns the field, ammount and attributes
-func (e *EspValues) GetValues() (string, float64, string) {
-	return e.field, e.amount, e.attributes
-}
+// // GetValues returns the field, ammount and attributes
+// func (e *EspValues) GetValues() (string, float64, string) {
+// 	return e.field, e.amount, e.attributes
+// }
 
 type ESPDateTime struct {
 	Local         string
