@@ -16,7 +16,7 @@ func (e *EspMessage) SetTopic(t string) {
 }
 
 func (e *EspMessage) SetDatetime(t string) {
-	e.payload.datatime = t
+	e.payload.datetime = t
 }
 
 func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
@@ -25,14 +25,15 @@ func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
 }
 
 type EspPayload struct {
-	datatime string // esp
-	values   []EspValues
+	datetime  string      `json:"datetime"`
+	values    []EspValues `json:"values"`
+	messageId string      `json:"messageId"`
 }
 
 type EspValues struct {
-	field      string
-	amount     float64
-	attributes string // JSON string
+	field      string  `json:"field"`
+	amount     float64 `json:"amount"`
+	attributes string  `json:"attributes"`
 }
 
 type ESPDateTime struct {
