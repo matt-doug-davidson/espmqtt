@@ -7,15 +7,32 @@ import (
 )
 
 type EspMessage struct {
-	Datetime string // esp
-	Entity   string // Comes from configuration.
-	Values   []EspValues
+	topic   string
+	payload EspPayload
+}
+
+func (e *EspMessage) SetTopic(t string) {
+	e.topic = t
+}
+
+func (e *EspMessage) SetDatetime(t string) {
+	e.payload.datatime = t
+}
+
+func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
+	v := EspValues{field: field, amount: amount, attributes: attr}
+	e.payload.values = append(e.payload.values, v)
+}
+
+type EspPayload struct {
+	datatime string // esp
+	values   []EspValues
 }
 
 type EspValues struct {
-	Field      string
-	Amount     float64
-	Attributes string // JSON string
+	field      string
+	amount     float64
+	attributes string // JSON string
 }
 
 type ESPDateTime struct {
