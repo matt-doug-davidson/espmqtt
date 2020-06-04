@@ -15,6 +15,10 @@ func (e *EspMessage) SetTopic(t string) {
 	e.topic = t
 }
 
+func (e *EspMessage) GetTopic() string {
+	return e.topic
+}
+
 func (e *EspMessage) SetDatetime(t string) {
 	e.payload.datetime = t
 }
