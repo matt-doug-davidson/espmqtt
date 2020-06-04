@@ -38,10 +38,25 @@ type EspPayload struct {
 	messageId string      `json:"messageId"`
 }
 
+// GetDatetime returns the datetime
+func (e *EspPayload) GetDatetime() string {
+	return e.datetime
+}
+
+// GetValues returns the values slice to caller
+func (e *EspPayload) GetValues() []EspValues {
+	return e.values
+}
+
 type EspValues struct {
 	field      string  `json:"field"`
 	amount     float64 `json:"amount"`
 	attributes string  `json:"attributes"`
+}
+
+// GetValues returns the field, ammount and attributes
+func (e *EspValues) GetValues() (string, float64, string) {
+	return e.field, e.amount, e.attributes
 }
 
 type ESPDateTime struct {
