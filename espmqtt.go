@@ -6,58 +6,24 @@ import (
 	"time"
 )
 
+// EspMessage contains the topic and payload
 type EspMessage struct {
 	Topic   string
 	Payload EspPayload
 }
 
-// func (e *EspMessage) SetTopic(t string) {
-// 	e.topic = t
-// }
-
-// func (e *EspMessage) GetTopic() string {
-// 	return e.topic
-// }
-
-// func (e *EspMessage) GetPayload() EspPayload {
-// 	return e.payload
-// }
-
-// func (e *EspMessage) SetDatetime(t string) {
-// 	e.payload.datetime = t
-// }
-
-// func (e *EspMessage) AppendValue(field string, amount float64, attr string) {
-// 	v := EspValues{field: field, amount: amount, attributes: attr}
-// 	e.payload.values = append(e.payload.values, v)
-// }
-
+// EspPayload is part of the payload data.
 type EspPayload struct {
-	Datetime  string      `json:"datetime"`
-	Values    []EspValues `json:"values"`
-	MessageId string      `json:"messageId"`
+	Datetime string      `json:"datetime"`
+	Values   []EspValues `json:"values"`
 }
 
-// GetDatetime returns the datetime
-// func (e *EspPayload) GetDatetime() string {
-// 	return e.datetime
-// }
-
-// // GetValues returns the values slice to caller
-// func (e *EspPayload) GetValues() []EspValues {
-// 	return e.values
-// }
-
+// EspValues contains the data for each measurement
 type EspValues struct {
 	Field      string  `json:"field"`
 	Amount     float64 `json:"amount"`
 	Attributes string  `json:"attributes"`
 }
-
-// // GetValues returns the field, ammount and attributes
-// func (e *EspValues) GetValues() (string, float64, string) {
-// 	return e.field, e.amount, e.attributes
-// }
 
 type ESPDateTime struct {
 	Local         string
@@ -86,6 +52,7 @@ func after(target string, after string) string {
 
 }
 
+// FormatESPTime format date/time to UTC value
 func FormatESPTime(timestring string) string {
 	// Get the time zone. It is going to be added to the
 	// time string before converting.
