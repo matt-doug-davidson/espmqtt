@@ -1,6 +1,7 @@
 package espmqtt
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -123,15 +124,15 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	// topic, snapshotMap := connector.Decode(input.ConnectorMsg)
 	// snapshotMap["messageId"] = uuid.New().String()
 
-	// jsonData, err := json.Marshal(snapshotMap)
-	// if err != nil {
-	// 	logger.Error("Failed json marshalling", err.Error())
-	// 	return false, err
-	// }
-	// logger.Info("JsonData: ", string([]byte(jsonData)))
+	jsonData, err := json.Marshal(input.ConnectorMsg["data"])
+	if err != nil {
+		logger.Error("Failed json marshalling", err.Error())
+		return false, err
+	}
+	logger.Info("JsonData: ", string([]byte(jsonData)))
 
-	// a.Publish("esp/"+topic, jsonData)
-	// logger.Info("espmqtt:Eval exit")
+	a.Publish("esp/"+input.ConnectorMsg["entity"].(string), jsonData)
+	logger.Info("espmqtt:Eval exit")
 
 	return true, nil
 }
