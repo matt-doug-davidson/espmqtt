@@ -8,6 +8,7 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/google/uuid"
 	"github.com/project-flogo/core/activity"
 	"github.com/project-flogo/core/data/metadata"
 	flogolog "github.com/project-flogo/core/support/log"
@@ -118,13 +119,15 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	}
 	fmt.Println(input.ConnectorMsg)
 	fmt.Println(input.ConnectorMsg["entity"])
-	fmt.Println(input.ConnectorMsg["data"])
+	payload := input.ConnectorMsg["data"].(map[string]interface{})
+	payload["messageId"] = uuid.New().String()
+	fmt.Println(payload)
 
 	// Call common function to decode the connector message.
 	// topic, snapshotMap := connector.Decode(input.ConnectorMsg)
 	// snapshotMap["messageId"] = uuid.New().String()
 
-	jsonData, err := json.Marshal(input.ConnectorMsg["data"])
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		logger.Error("Failed json marshalling", err.Error())
 		return false, err
