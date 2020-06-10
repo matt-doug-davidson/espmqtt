@@ -1,15 +1,12 @@
 package espmqtt
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/google/uuid"
-	"github.com/matt-doug-davidson/connector"
 	"github.com/project-flogo/core/activity"
 	"github.com/project-flogo/core/data/metadata"
 	flogolog "github.com/project-flogo/core/support/log"
@@ -118,20 +115,23 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 		logger.Error("Failed to input object")
 		return false, err
 	}
+	fmt.Println(input.ConnectorMsg)
+	fmt.Println(input.ConnectorMsg["entity"])
+	fmt.Println(input.ConnectorMsg["data"])
 
 	// Call common function to decode the connector message.
-	topic, snapshotMap := connector.Decode(input.ConnectorMsg)
-	snapshotMap["messageId"] = uuid.New().String()
+	// topic, snapshotMap := connector.Decode(input.ConnectorMsg)
+	// snapshotMap["messageId"] = uuid.New().String()
 
-	jsonData, err := json.Marshal(snapshotMap)
-	if err != nil {
-		logger.Error("Failed json marshalling", err.Error())
-		return false, err
-	}
-	logger.Info("JsonData: ", string([]byte(jsonData)))
+	// jsonData, err := json.Marshal(snapshotMap)
+	// if err != nil {
+	// 	logger.Error("Failed json marshalling", err.Error())
+	// 	return false, err
+	// }
+	// logger.Info("JsonData: ", string([]byte(jsonData)))
 
-	a.Publish("esp/"+topic, jsonData)
-	logger.Info("espmqtt:Eval exit")
+	// a.Publish("esp/"+topic, jsonData)
+	// logger.Info("espmqtt:Eval exit")
 
 	return true, nil
 }
