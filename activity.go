@@ -117,11 +117,11 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 		logger.Error("Failed to input object")
 		return false, err
 	}
-	fmt.Println(input.ConnectorMsg)
-	fmt.Println(input.ConnectorMsg["entity"])
+	//fmt.Println(input.ConnectorMsg)
+	//fmt.Println(input.ConnectorMsg["entity"])
 	payload := input.ConnectorMsg["data"].(map[string]interface{})
 	payload["messageId"] = uuid.New().String()
-	fmt.Println(payload)
+	//fmt.Println(payload)
 
 	// Call common function to decode the connector message.
 	// topic, snapshotMap := connector.Decode(input.ConnectorMsg)
