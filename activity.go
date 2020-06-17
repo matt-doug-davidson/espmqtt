@@ -2,7 +2,6 @@ package espmqtt
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -20,6 +19,7 @@ import (
 type Activity struct {
 	settings *Settings // Defind in metadata.go in this package
 	client   mqtt.Client
+	logger   flogolog.Logger
 }
 
 // Metadata returns the activity's metadata
@@ -64,13 +64,12 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 
 	// onConnect defines the on connect handler which resets backoff variables.
 	var onConnect mqtt.OnConnectHandler = func(client mqtt.Client) {
-		fmt.Println("Client connected: ", client.IsConnected())
+		flogolog.RootLogger().Warn("Client connected.")
 		connectedOnce = true
 	}
 	// onDisconnect defines the connection lost handler for the mqtt client.
 	var onDisconnect mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-		fmt.Println("Client disconnected")
-		fmt.Println(err.Error())
+		flogolog.RootLogger().Warn("Client disconnected. Error: ", err.Error())
 		connectedOnce = false
 	}
 
@@ -99,7 +98,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 
 	// Create the activity with settings as defaut. Set any other field in
 	//the activity here as well
-	act := &Activity{settings: s, client: client}
+	act := &Activity{settings: s, client: client, logger: logger}
 	act.connect()
 
 	logger.Info("espmqtt:New exit")
@@ -128,6 +127,7 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	logger.Info("JsonData: ", string([]byte(jsonData)))
 
 	a.Publish("esp/"+input.ConnectorMsg["entity"].(string), jsonData)
+
 	logger.Info("espmqtt:Eval exit")
 
 	return true, nil
@@ -142,10 +142,11 @@ func (a *Activity) Cleanup() error {
 	return nil
 
 }
+
 func (a *Activity) connect() error {
-	println("Acitvity:connect")
+	a.logger.Info("Acitvity:connect")
 	if token := a.client.Connect(); token.Wait() && token.Error() != nil {
-		fmt.Println("Failed to connect client. Error: ", token.Error())
+		a.logger.Error("Failed to connect client. Error: ", token.Error())
 		return token.Error()
 	}
 	return nil
@@ -158,7 +159,7 @@ func (a *Activity) Publish(topic string, payload []byte) error {
 	}
 	if a.client.IsConnected() {
 		if token := a.client.Publish(topic, 0, false, payload); token.Wait() && token.Error() != nil {
-			fmt.Println("Failed to publish payload to device state topic")
+			a.logger.Error("Failed to publish payload to device state topic")
 			return token.Error()
 		}
 	}
