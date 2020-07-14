@@ -1,9 +1,9 @@
 # ESP MQTT
 ##Installation
 ###Flogo CLI
-'''bash
+```bash
 flogo install github.com/matt-doug-davidson/espmqtt
-'''
+```
 
 ## Schema
 Inputs and Outputs:
