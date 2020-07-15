@@ -8,4 +8,30 @@ flogo install github.com/matt-doug-davdison/espmqtt
 ```
 
 ## Schema
-Inputs and Outputs:
+
+### Settings
+
+| Setting     | Type   | Required  | Description |
+|:------------|:-------|:----------|:------------|
+| host  | string      | True | The host running the MQTT broker|
+| port | string | True | The MQTT port (typically 1883)|
+| clientid | string | True | Unique ID for this MQTT client|
+| mqttdebug | boolean | True | Enable (True) or Disable (False) |
+
+### Input
+```json
+{
+    "input": [
+      {
+        "name": "connectorMsg",
+        "type": "object",
+        "description": "The message connectorMsg object"
+      }
+    ]
+}
+```
+### Output
+
+*Not applicable*
+
+## Examples
