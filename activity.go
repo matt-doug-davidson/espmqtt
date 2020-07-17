@@ -72,7 +72,10 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 	reportArray := make([]string, 0)
 	for _, mapper := range result {
 		fmt.Println("mapper:\n", mapper)
-		array := mapper.([]interface{}) // Convert to a slice
+		mapper1 := mapper.(map[string]interface{})
+		fmt.Println("mapper1:\n", mapper1)
+		array := mapper1["report"].([]interface{})
+		//array := mapper.([]interface{}) // Convert to a slice
 		fmt.Println("array:\n", array)
 		for _, x := range array {
 			// Type assert to string and add to slice
