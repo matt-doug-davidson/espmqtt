@@ -18,6 +18,7 @@ flogo install github.com/matt-doug-davdison/espmqtt
 | clientid | string | True | Unique ID for this MQTT client|
 | mqttdebug | boolean | True | Enable (True) or Disable (False) |
 | report | JSON String | False | A JSON string with key fo "report" and array of fields to be reported. If not configured, all fields will be reported. |
+| path | JSON String| False | The entity path this ESP MQTT object supports. It is used to report RUNNING and NOT_RUNNING states for the path at startup and cleanup respectively. If not define, no state changes are reported.
 
 Report Example:
 ```json
@@ -25,6 +26,13 @@ Report Example:
     "report": ["NO2", "O3"]
 }
 ```
+Path Exampe:
+```json
+{
+    "path": "/Bucharest/Madison/Inner"
+}
+```
+
 Only NO2 and O3 fields would be reported.
 
 ### Input
