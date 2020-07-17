@@ -65,10 +65,13 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 	// Report array: if empty report everything. If not empty only report those in the array.
 	var result map[string]interface{}
 	json.Unmarshal([]byte(s.Report), &result)
+	fmt.Println("result:\n", result)
 	// Only the size required.
 	reportArray := make([]string, 0)
 	for _, mapper := range result {
+		fmt.Println("mapper:\n", mapper)
 		array := mapper.([]interface{}) // Convert to a slice
+		fmt.Println("array:\n", array)
 		for _, x := range array {
 			// Type assert to string and add to slice
 			reportArray = append(reportArray, x.(string))
