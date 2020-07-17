@@ -52,6 +52,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 	logger := ctx.Logger()
 	logger.Info("espmqtt:New enter")
 	s := &Settings{}
+	fmt.Println("setting, s:\n", s)
 	err := metadata.MapToStruct(ctx.Settings(), s, true)
 	if err != nil {
 		logger.Error("Failed to convert settings")

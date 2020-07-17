@@ -8,7 +8,7 @@ type Settings struct {
 	Port      string `md:"port,required"`
 	ClientId  string `md:"clientid,required"`
 	MqttDebug bool   `md:"mqttdebug"`
-	Report    string `md:"Report fields"`
+	Report    string `md:"report"`
 }
 
 // Input for the package
