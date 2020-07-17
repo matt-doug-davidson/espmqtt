@@ -17,6 +17,15 @@ flogo install github.com/matt-doug-davdison/espmqtt
 | port | string | True | The MQTT port (typically 1883)|
 | clientid | string | True | Unique ID for this MQTT client|
 | mqttdebug | boolean | True | Enable (True) or Disable (False) |
+| report | JSON String | False | A JSON string with key fo "report" and array of fields to be reported. If not configured, all fields will be reported. |
+
+Report Example:
+```json
+{
+    "report": ["NO2", "O3"]
+}
+```
+Only NO2 and O3 fields would be reported.
 
 ### Input
 ```json
