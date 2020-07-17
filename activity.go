@@ -2,6 +2,7 @@ package espmqtt
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -20,6 +21,7 @@ type Activity struct {
 	settings *Settings // Defind in metadata.go in this package
 	client   mqtt.Client
 	logger   flogolog.Logger
+	report   []string
 }
 
 // Metadata returns the activity's metadata
@@ -60,6 +62,19 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 	mqttDebug := s.MqttDebug
 	clientID := s.ClientId
 
+	// Report array: if empty report everything. If not empty only report those in the array.
+	var result map[string]interface{}
+	json.Unmarshal([]byte(s.Report), &result)
+	// Only the size required.
+	reportArray := make([]string, 0)
+	for _, mapper := range result {
+		array := mapper.([]interface{}) // Convert to a slice
+		for _, x := range array {
+			// Type assert to string and add to slice
+			reportArray = append(reportArray, x.(string))
+		}
+	}
+	fmt.Println("reportArray:\n", reportArray)
 	// Do MQTT stuff here
 
 	// onConnect defines the on connect handler which resets backoff variables.
@@ -98,7 +113,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 
 	// Create the activity with settings as defaut. Set any other field in
 	//the activity here as well
-	act := &Activity{settings: s, client: client, logger: logger}
+	act := &Activity{settings: s, client: client, logger: logger, report: reportArray}
 	act.connect()
 
 	logger.Info("espmqtt:New exit")

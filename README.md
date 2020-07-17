@@ -35,3 +35,23 @@ flogo install github.com/matt-doug-davdison/espmqtt
 *Not applicable*
 
 ## Examples
+```json
+{
+  "id": "espmqtt_3",
+  "name": "10m ESP MQTT Interface",
+  "description": "MQTT interface to ESP",
+  "activity": {
+    "ref": "#espmqtt",
+    "input": {
+      "connectorMsg": "=$activity[aeroqualaqy1_2].connectorMsg"
+    },
+    "settings": {
+      "clientid": "Aeroqual10m",
+      "host": "10.52.65.189",
+      "mqttdebug": false,
+      "port": "1883"
+    }
+  }
+}
+```
+
