@@ -64,6 +64,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 
 	// Report array: if empty report everything. If not empty only report those in the array.
 	var result map[string]interface{}
+	fmt.Println("s.Report:\n", s.Report)
 	json.Unmarshal([]byte(s.Report), &result)
 	fmt.Println("result:\n", result)
 	// Only the size required.
