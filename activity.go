@@ -152,35 +152,21 @@ func (a *Activity) selectReportFields(original map[string]interface{}) map[strin
 	// Copy command key/values
 	newPayload["datetime"] = original["datetime"]
 	newPayload["messageId"] = original["messageId"]
-	fmt.Println(newPayload)
-	values := original["values"].([]interface{})
-	fmt.Println("values:\n", values)
+	values := original["values"].([]map[string]interface{})
 	newValues := make([]map[string]interface{}, 0, 10)
 	for _, v := range values {
-		value := v.(map[string]interface{})
-		fmt.Println(value["field"])
-		fmt.Println(value["amount"])
-		fmt.Println("search strings is: ", a.report)
-		fmt.Println("Search for: ", value["field"].(string))
-
-		field := value["field"].(string)
+		field := v["field"].(string)
 		if linearContains(a.report, field) {
-			fmt.Println("Linear Contains")
 			newValue := map[string]interface{}{}
 			newValue["field"] = field
-			newValue["amount"] = value["amount"].(float64)
+			newValue["amount"] = v["amount"].(float64)
 			// Append new value to values....
 			newValues = append(newValues, newValue)
 		}
-		if binaryContains(a.report, value["field"].(string)) {
-			fmt.Println("Binary Contains")
-		}
 	}
-	fmt.Println("newValues:\n", newValues)
 	if len(newValues) > 0 {
 		newPayload["values"] = newValues
 	}
-	fmt.Println("newPayload:\n", newPayload)
 
 	return newPayload
 }
