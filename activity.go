@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -81,6 +82,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 			// Type assert to string and add to slice
 			reportArray = append(reportArray, x.(string))
 		}
+		sort.Strings(reportArray)
 	}
 	fmt.Println("reportArray:\n", reportArray)
 	// Do MQTT stuff here
@@ -128,6 +130,61 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 	return act, nil
 }
 
+func linearContains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
+func binaryContains(a []string, x string) bool {
+	i := sort.Search(len(a), func(i int) bool { return x <= a[i] })
+	if i < len(a) && a[i] == x {
+		return true
+	}
+	return false
+}
+
+func (a *Activity) selectReportFields(original map[string]interface{}) map[string]interface{} {
+	newPayload := map[string]interface{}{}
+	// Copy command key/values
+	newPayload["datetime"] = original["datetime"]
+	newPayload["messageId"] = original["messageId"]
+	fmt.Println(newPayload)
+	values := original["values"].([]interface{})
+	fmt.Println("values:\n", values)
+	newValues := make([]map[string]interface{}, 0, 10)
+	for _, v := range values {
+		value := v.(map[string]interface{})
+		fmt.Println(value["field"])
+		fmt.Println(value["amount"])
+		fmt.Println("search strings is: ", a.report)
+		fmt.Println("Search for: ", value["field"].(string))
+
+		field := value["field"].(string)
+		if linearContains(a.report, field) {
+			fmt.Println("Linear Contains")
+			newValue := map[string]interface{}{}
+			newValue["field"] = field
+			newValue["amount"] = value["amount"].(float64)
+			// Append new value to values....
+			newValues = append(newValues, newValue)
+		}
+		if binaryContains(a.report, value["field"].(string)) {
+			fmt.Println("Binary Contains")
+		}
+	}
+	fmt.Println("newValues:\n", newValues)
+	if len(newValues) > 0 {
+		newPayload["values"] = newValues
+	}
+	fmt.Println("newPayload:\n", newPayload)
+
+	return newPayload
+}
+
 // Eval evaluates the activity
 func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	logger := ctx.Logger()
@@ -142,6 +199,12 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	payload := input.ConnectorMsg["data"].(map[string]interface{})
 	payload["messageId"] = uuid.New().String()
 
+	// Select fields to be reported if defined. Otherwise, send the original
+	if len(a.report) > 0 {
+		payload = a.selectReportFields(payload)
+	}
+
+	// jsonData is a string
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		logger.Error("Failed json marshalling", err.Error())
