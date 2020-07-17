@@ -9,6 +9,7 @@ type Settings struct {
 	ClientId  string `md:"clientid,required"`
 	MqttDebug bool   `md:"mqttdebug"`
 	Report    string `md:"report"`
+	Path      string `md:"path"`
 }
 
 // Input for the package
