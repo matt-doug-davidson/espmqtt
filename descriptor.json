@@ -37,10 +37,10 @@
         "description": "JSON object with report fields"
       },
       {
-        "name": "path",
+        "name": "paths",
         "type": "string",
         "required": false,
-        "description": "JSON object with path this ESP MQTT instance supports"
+        "description": "JSON object with paths this ESP MQTT instance supports"
       }
     ],
     "input": [

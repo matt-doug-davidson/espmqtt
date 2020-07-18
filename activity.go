@@ -23,6 +23,7 @@ type Activity struct {
 	client   mqtt.Client
 	logger   flogolog.Logger
 	report   []string
+	paths    []string
 }
 
 // Metadata returns the activity's metadata
@@ -85,6 +86,25 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 		sort.Strings(reportArray)
 	}
 	fmt.Println("reportArray:\n", reportArray)
+
+	var pathResult map[string]interface{}
+	fmt.Println(s.Paths)
+	json.Unmarshal([]byte(s.Paths), &pathResult)
+	fmt.Println("pathResult:\n", pathResult)
+	// Only the size required.
+	pathArray := make([]string, 0)
+	for _, mapper := range pathResult {
+		fmt.Println("mapper:\n", mapper)
+		mapper1 := mapper.(map[string]interface{})
+		fmt.Println("mapper1:\n", mapper1)
+		array := mapper1["path"].([]interface{})
+		fmt.Println("array:\n", array)
+		for _, x := range array {
+			// Type assert to string and add to slice
+			pathArray = append(pathArray, x.(string))
+		}
+		sort.Strings(pathArray)
+	}
 	// Do MQTT stuff here
 
 	// onConnect defines the on connect handler which resets backoff variables.
@@ -123,7 +143,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 
 	// Create the activity with settings as defaut. Set any other field in
 	//the activity here as well
-	act := &Activity{settings: s, client: client, logger: logger, report: reportArray}
+	act := &Activity{settings: s, client: client, logger: logger, report: reportArray, paths: pathArray}
 	act.connect()
 
 	logger.Info("espmqtt:New exit")
@@ -205,14 +225,62 @@ func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 	return true, nil
 }
 
+func (a *Activity) publishStatus(path string, status string, description string) {
+	payload := make(map[string]string)
+	payload["status"] = status
+	payload["datetime"] = time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+	payload["messageId"] = uuid.New().String()
+	if len(description) > 0 {
+		payload["description"] = description
+	}
+	// jsonData is a string
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return
+	}
+	topic := "esp" + path
+	a.Publish(topic, jsonData)
+}
+
+func (a *Activity) publishAllStatus(status string, description string) {
+	payload := make(map[string]string)
+	payload["status"] = status
+	payload["datetime"] = time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+	payload["messageId"] = uuid.New().String()
+	if len(description) > 0 {
+		payload["description"] = description
+	}
+	// jsonData is a string
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return
+	}
+	for _, path := range a.paths {
+		topic := "esp" + path
+		a.Publish(topic, jsonData)
+	}
+}
+
+func (a *Activity) PublishAllRunning() {
+	a.publishAllStatus("RUNNING", "")
+}
+func (a *Activity) PublishAllNotRunning() {
+	a.publishAllStatus("NOT_RUNNING", "")
+}
+
+func (a *Activity) PublishError(path string, description string) {
+	a.publishStatus(path, "ERROR", description)
+}
+
 // Cleanup was expected to be called when the application stops.
 func (a *Activity) Cleanup() error {
+
+	a.PublishAllNotRunning()
 
 	flogolog.RootLogger().Infof("cleaning up espmqtt activity")
 
 	a.client.Disconnect(10)
 	return nil
-
 }
 
 func (a *Activity) connect() error {
@@ -221,6 +289,7 @@ func (a *Activity) connect() error {
 		a.logger.Error("Failed to connect client. Error: ", token.Error())
 		return token.Error()
 	}
+	a.PublishAllRunning()
 	return nil
 }
 
