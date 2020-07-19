@@ -97,7 +97,7 @@ func New(ctx activity.InitContext) (activity.Activity, error) {
 		fmt.Println("mapper:\n", mapper)
 		mapper1 := mapper.(map[string]interface{})
 		fmt.Println("mapper1:\n", mapper1)
-		array := mapper1["path"].([]interface{})
+		array := mapper1["paths"].([]interface{})
 		fmt.Println("array:\n", array)
 		for _, x := range array {
 			// Type assert to string and add to slice
@@ -172,20 +172,29 @@ func (a *Activity) selectReportFields(original map[string]interface{}) map[strin
 	// Copy command key/values
 	newPayload["datetime"] = original["datetime"]
 	newPayload["messageId"] = original["messageId"]
-	values := original["values"].([]map[string]interface{})
-	newValues := make([]map[string]interface{}, 0, 10)
-	for _, v := range values {
-		field := v["field"].(string)
-		if linearContains(a.report, field) {
-			newValue := map[string]interface{}{}
-			newValue["field"] = field
-			newValue["amount"] = v["amount"].(float64)
-			// Append new value to values....
-			newValues = append(newValues, newValue)
-		}
+	if val, ok := original["status"]; ok {
+		newPayload["status"] = val
 	}
-	if len(newValues) > 0 {
-		newPayload["values"] = newValues
+	if val, ok := original["description"]; ok {
+		newPayload["description"] = val
+	}
+	if val, ok := original["values"]; ok {
+		//values := original["values"].([]map[string]interface{})
+		values := val.([]map[string]interface{})
+		newValues := make([]map[string]interface{}, 0, 10)
+		for _, v := range values {
+			field := v["field"].(string)
+			if linearContains(a.report, field) {
+				newValue := map[string]interface{}{}
+				newValue["field"] = field
+				newValue["amount"] = v["amount"].(float64)
+				// Append new value to values....
+				newValues = append(newValues, newValue)
+			}
+		}
+		if len(newValues) > 0 {
+			newPayload["values"] = newValues
+		}
 	}
 
 	return newPayload
